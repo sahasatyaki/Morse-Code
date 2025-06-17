@@ -10,11 +10,9 @@ import wave
 import struct
 import matplotlib.pyplot as plt
 
-# ✅ Initialize pygame mixer once
 pygame.mixer.init()
 SOUND_FOLDER = "sounds"
 
-# ✅ Morse Code Dictionary
 MORSE_CODE_DICT = {
     'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..',  'E': '.',   'F': '..-.', 'G': '--.',
     'H': '....', 'I': '..',  'J': '.---', 'K': '-.-',  'L': '.-..','M': '--',   'N': '-.',
@@ -83,38 +81,38 @@ def play_letter_sounds(text):
                     while pygame.mixer.music.get_busy():
                         time.sleep(0.1)
                 except Exception as e:
-                    print(f"❌ Error playing {char}: {e}")
+                    print(f"Error playing {char}: {e}")
             else:
-                print(f"⚠️ Missing sound file: {file_path}")
+                print(f"Missing sound file: {file_path}")
 
 def speech_to_text():
     recognizer = sr.Recognizer()
     with sr.Microphone() as source:
-        print("🎙️ Speak something in English...")
+        print("Speak something in English...")
         audio = recognizer.listen(source)
     try:
         text = recognizer.recognize_google(audio)
-        print(f"📝 You said: {text}")
+        print(f"You said: {text}")
         return text
     except sr.UnknownValueError:
-        print("❌ Could not understand audio.")
+        print("Could not understand audio.")
     except sr.RequestError:
-        print("⚠️ Speech recognition service error.")
+        print("Speech recognition service error.")
     return ""
 
 def speech_to_morse_string():
     recognizer = sr.Recognizer()
     with sr.Microphone() as source:
-        print("🎙️ Speak your Morse (say 'dot dash slash')...")
+        print("Speak your Morse (say 'dot dash slash')...")
         audio = recognizer.listen(source)
     try:
         spoken = recognizer.recognize_google(audio)
-        print(f"🗣️ You said: {spoken}")
+        print(f"You said: {spoken}")
         return spoken.lower().replace("dot", ".").replace("dash", "-").replace("slash", "/")
     except sr.UnknownValueError:
-        print("❌ Could not understand audio.")
+        print("Could not understand audio.")
     except sr.RequestError:
-        print("⚠️ Speech recognition service error.")
+        print("Speech recognition service error.")
     return ""
 
 def audiofile_to_morse_string(filepath):
@@ -139,12 +137,12 @@ def audiofile_to_morse_string(filepath):
                 count = 1
         durations.append((current, count))
 
-        print("🧠 Detected durations:")
+        print("Detected durations:")
         for is_beep, dur in durations:
             print(f" {'Beep' if is_beep else 'Silence'}: {dur} frames")
 
         unit_samples = int(statistics.median([d for state, d in durations if state]))
-        print(f"📏 Estimated Unit: {unit_samples} frames")
+        print(f"Estimated Unit: {unit_samples} frames")
 
         morse_string = ""
         for is_beep, duration in durations:
@@ -159,13 +157,12 @@ def audiofile_to_morse_string(filepath):
         print(f"📡 Decoded Morse: {morse_string}")
         return morse_string
     except Exception as e:
-        print(f"❌ Error decoding Morse from audio: {e}")
+        print(f"Error decoding Morse from audio: {e}")
         return ""
 
-# ✅ Generate .wav Morse audio from text
 def generate_morse_audio(text, filename="morse_output.wav", unit_duration=0.1, freq=700, rate=44100):
     morse_code = text_to_morse(text)
-    print(f"🎼 Generating Morse audio for: {morse_code}")
+    print(f"Generating Morse audio for: {morse_code}")
     dot_len = int(rate * unit_duration)
     dash_len = int(rate * unit_duration * 3)
     intra_gap = int(rate * unit_duration)
@@ -195,9 +192,8 @@ def generate_morse_audio(text, filename="morse_output.wav", unit_duration=0.1, f
         wf.setframerate(rate)
         wf.writeframes(b''.join(struct.pack('<h', s) for s in samples))
 
-    print(f"✅ Saved Morse audio to: {filename}")
+    print(f"Saved Morse audio to: {filename}")
 
-# ✅ Plot waveform and energy envelope for debug
 def plot_waveform(filepath):
     rate, data = wav.read(filepath)
     if len(data.shape) == 2:
@@ -220,7 +216,7 @@ def plot_waveform(filepath):
     plt.show()
 
 def main():
-    print("\n📡 MORSE CODE TRANSLATOR")
+    print("\n MORSE CODE TRANSLATOR")
     print("1. English text → Morse")
     print("2. English speech → Morse")
     print("3. Morse text → English")
@@ -233,8 +229,8 @@ def main():
     if choice == "1":
         user_text = input("Enter English text: ")
         morse = text_to_morse(user_text)
-        print(f"📡 Morse Code:\n{morse}")
-        play_mode = input("🔊 Play as (1) Morse beeps or (2) .wav letter sounds? ").strip()
+        print(f"Morse Code:\n{morse}")
+        play_mode = input("Play as (1) Morse beeps or (2) .wav letter sounds? ").strip()
         if play_mode == "1":
             play_morse_code(morse)
         elif play_mode == "2":
@@ -244,8 +240,8 @@ def main():
         user_text = speech_to_text()
         if user_text:
             morse = text_to_morse(user_text)
-            print(f"📡 Morse Code:\n{morse}")
-            play_mode = input("🔊 Play as (1) Morse beeps or (2) .wav letter sounds? ").strip()
+            print(f"Morse Code:\n{morse}")
+            play_mode = input("Play as (1) Morse beeps or (2) .wav letter sounds? ").strip()
             if play_mode == "1":
                 play_morse_code(morse)
             elif play_mode == "2":
@@ -254,10 +250,10 @@ def main():
     elif choice == "3":
         morse_input = input("Enter Morse Code (use / for space): ")
         text = morse_to_text(morse_input)
-        print(f"🔤 English Text:\n{text}")
+        print(f"English Text:\n{text}")
 
     elif choice == "4":
-        print("🎧 Choose input type:")
+        print("Choose input type:")
         print("   1. Microphone")
         print("   2. Pre-recorded audio file")
         sub_choice = input("Select (1 or 2): ").strip()
@@ -268,10 +264,10 @@ def main():
             file_path = input("Enter path to audio file (e.g., audio.wav): ").strip()
             morse_string = audiofile_to_morse_string(file_path)
         else:
-            print("❌ Invalid sub-option.")
+            print("Invalid sub-option.")
         if morse_string:
             text = morse_to_text(morse_string)
-            print(f"🔤 English Text:\n{text}")
+            print(f"English Text:\n{text}")
 
     elif choice == "5":
         text = input("Enter text to generate Morse .wav: ")
@@ -282,7 +278,7 @@ def main():
         plot_waveform(file_path)
 
     else:
-        print("❌ Invalid choice.")
+        print("Invalid choice.")
 
 if __name__ == "__main__":
     main()
