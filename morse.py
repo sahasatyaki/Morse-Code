@@ -5,6 +5,7 @@ import time
 import os
 import numpy as np
 import scipy.io.wavfile as wav
+import statistics  # ✅ added for median-based unit calculation
 
 # ✅ Initialize pygame mixer once
 pygame.mixer.init()
@@ -28,7 +29,27 @@ INVERSE_MORSE_DICT = {v: k for k, v in MORSE_CODE_DICT.items()}
 def text_to_morse(text):
     return ' '.join(MORSE_CODE_DICT.get(char, '') for char in text.upper())
 
+# ✅ Intelligent splitting if Morse has no spaces
+def insert_spaces_into_morse(morse):
+    patterns = sorted(INVERSE_MORSE_DICT.keys(), key=len, reverse=True)
+    i = 0
+    result = []
+    while i < len(morse):
+        matched = False
+        for p in patterns:
+            if morse[i:i+len(p)] == p:
+                result.append(p)
+                i += len(p)
+                matched = True
+                break
+        if not matched:
+            i += 1
+    return ' '.join(result)
+
 def morse_to_text(morse):
+    if all(sym in '.-/' for sym in morse.replace(' ', '')):
+        morse = insert_spaces_into_morse(morse)
+
     words = morse.strip().split(' / ')
     decoded = []
     for word in words:
@@ -124,7 +145,7 @@ def audiofile_to_morse_string(filepath):
                 count = 1
         durations.append((current, count))
 
-        unit_samples = min([d for state, d in durations if state])
+        unit_samples = int(statistics.median([d for state, d in durations if state]))
         morse_string = ""
         for is_beep, duration in durations:
             units = round(duration / unit_samples)
