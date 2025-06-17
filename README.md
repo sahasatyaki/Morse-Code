@@ -185,10 +185,10 @@ morse-code-translator/
 │   └── ...
 ├── requirements.txt
 ├── README.md             # ← you are here
-└── morse_translator.py   # Single‑file implementation
+└── morse.py   # Single‑file implementation
 ```
 
-> In larger deployments you may wish to split `morse_translator.py` into a package (`morse/`) with separate modules for `audio.py`, `recognition.py`, etc. The current monolithic script simplifies distribution to beginners.
+> In larger deployments you may wish to split `morse.py` into a package (`morse/`) with separate modules for `audio.py`, `recognition.py`, etc. The current monolithic script simplifies distribution to beginners.
 
 ---
 
